@@ -1,3 +1,4 @@
+import catchAsyncErrors from "../middleware/catchAsyncErrors.js"
 import Product from "../model/Product.js"
 import errorHandler from "../utils/errorHandler.js"
 export const getProducts = async (req,res,next )=>{
@@ -10,22 +11,22 @@ export const getProducts = async (req,res,next )=>{
     })
 }
 
-export const getProductsDetails= async(req,res)=> {
+export const getProductsDetails= catchAsyncErrors( async(req,res)=> {
 
-const product= await Product.findById(req?.params?.id)
+    const product= await Product.findById(req?.params?.id)
+    
+    if(!product){
+        return res.status(404).json({
+            error:"mehsul tapilmadi" 
+    } )
+    
+    }
+    res.status(200).json({
+        product
+    })
+    })
 
-if(!product){
-    return res.status(404).json({
-        error:"mehsul tapilmadi" 
-} )
-
-}
-res.status(200).json({
-    product
-})
-}
-
-export const uptadeProducts= async(req,res)=>{
+export const uptadeProducts=catchAsyncErrors( async(req,res)=>{
 
     let product= await Product.findById(req?.params?.id)
    
@@ -42,10 +43,10 @@ export const uptadeProducts= async(req,res)=>{
    res.status(200).json({
     product
    })
-}
+})
 
 
-export const deleteProducts=async(req,res)=>{
+export const deleteProducts=catchAsyncErrors(async(req,res)=>{
 
     const product=Product.findById(req?.params?.id)
 
@@ -60,4 +61,4 @@ export const deleteProducts=async(req,res)=>{
     res.status(200).json({
         message:"mehsul ugurla silindj"
     })
-}
+})
