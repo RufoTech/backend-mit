@@ -1,9 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-
 import User from "../model/User.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import sendToken from "../utils/sendToken.js";
-
 export const registerUser = catchAsyncErrors(async(req,res,next) => {
 
     const {name, email, password } = req.body
@@ -48,7 +46,7 @@ export const logout = catchAsyncErrors(async(req,res,next)=> {
 })
 
 export const forgotPassword=catchAsyncErrors(async(req,res,next)=>{
-    const user =User.findOne({email:req.body.email})
+    const user = await User.findOne({email:req.body.email})
 
     if(!user){
         return next(new ErrorHandler("istifadeci tapilmadi",404))
@@ -79,6 +77,4 @@ export const forgotPassword=catchAsyncErrors(async(req,res,next)=>{
         await user.save()
         return next(new ErrorHandler("Serverde gozlenilmeyen bir xeta bash verdi", 500))
     }
-
-
 })

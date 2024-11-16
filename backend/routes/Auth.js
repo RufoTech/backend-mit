@@ -5,7 +5,7 @@ const router=express.Router()
 router.post("/register",registerUser)
 router.post("/login", login)
 router.get("/logout",logout)
-router.get("/password/forget",forgotPassword)
+router.get("/password/forgot",forgotPassword)
 
 
 export default router

@@ -1,64 +1,82 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js"
 import Product from "../model/Product.js"
-import errorHandler from "../utils/errorHandler.js"
-export const getProducts = async (req,res,next )=>{
-    const products= await Product.find()
-    if(!products){
-     return new errorHandler("mehsullar yoxdur",404)
+import ErrorHandler from "../utils/errorHandler.js"
+
+export const getProducts = catchAsyncErrors(async (req,res, next) => {
+
+    const products = await Product.find()
+
+    if(!products) {
+    
+        return next(new ErrorHandler("Mehsullar yoxdur", 404))
     }
     res.status(200).json({
-      products,
+        products,
     })
-}
+})
 
-export const getProductsDetails= catchAsyncErrors( async(req,res)=> {
+export const getProductsDetails = catchAsyncErrors(async(req,res, next) => {
+    const product = await Product.findById(req?.params?.id) 
 
-    const product= await Product.findById(req?.params?.id)
-    
-    if(!product){
-        return res.status(404).json({
-            error:"mehsul tapilmadi" 
-    } )
-    
+    if(!product) {
+     
+        return next(new ErrorHandler("Mehsul tapilmadi", 404))
     }
+
     res.status(200).json({
         product
     })
-    })
+}
+)
 
-export const uptadeProducts=catchAsyncErrors( async(req,res)=>{
+export const uptadeProducts = catchAsyncErrors( async(req,res) => {
+    let product = await Product.findById(req?.params?.id)
 
-    let product= await Product.findById(req?.params?.id)
-   
-    if(!product){
+    if(!product) {
         return res.status(404).json({
-            error:"mehsul tapilmadi"
+            error: "Mehsul tapilmadi"
         })
-        
     }
 
-   product= await Product.findByIdAndUpdate(req?.params?.id, req.body, {new:true})
-   console.log(product)
+    product = await Product.findByIdAndUpdate(req?.params?.id, req.body, {
+        new:true
+    })
 
-   res.status(200).json({
-    product
-   })
+    res.status(200).json({
+        product
+    })
+
+
+
 })
 
+export const deleteProducts = catchAsyncErrors(async(req,res) => {
+    const product = await Product.findById(req?.params?.id)
 
-export const deleteProducts=catchAsyncErrors(async(req,res)=>{
-
-    const product=Product.findById(req?.params?.id)
-
-    if(!product){
+    if(!product) {
         res.status(404).json({
-            error:"mehsul tapilmadi"
+            error: "Mehsul tapilmadi"
         })
+
+      
     }
 
     await Product.deleteOne()
 
     res.status(200).json({
-        message:"mehsul ugurla silindj"
+        message:"Mehsul ugurla silindi"
     })
+}
+)
+
+
+export const newProduct = catchAsyncErrors(async(req,res,next)=> {
+    
+    const product = await Product.create(req.body)
+
+    res.status(201).json({
+        product
+    })
+
 })
+
