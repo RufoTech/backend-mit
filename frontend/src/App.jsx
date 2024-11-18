@@ -4,6 +4,7 @@ import { BrowserRouter,Routes,Route } from 'react-router-dom'
 import Home from './Pages/Home'
 import Login from './components/Login'
 import ForgotPassword from './components/ForgotPassword'
+
 function App() {
 
   return (

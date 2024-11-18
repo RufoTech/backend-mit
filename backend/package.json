@@ -6,8 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node --watch server.js --watch",
-    "dev": "  NODE_ENV=DEVELOPMENT  nodemon server.js",
-    "prod": "  NODE_ENV=PRODUCTION nodemon server.js"
+    "dev": "NODE_ENV=DEVELOPMENT  nodemon server.js",
+    "prod": "NODE_ENV=PRODUCTION nodemon server.js"
   },
   "author": "Rufat Alakbarli",
   "license": "MIT",

@@ -2,6 +2,8 @@ import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import User from "../model/User.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import sendToken from "../utils/sendToken.js";
+import {sendEmail} from "../utils/sendEmail.js"
+import { getResetPasswordTemplate } from "../utils/emailTemplates.js";
 export const registerUser = catchAsyncErrors(async(req,res,next) => {
 
     const {name, email, password } = req.body
@@ -45,22 +47,28 @@ export const logout = catchAsyncErrors(async(req,res,next)=> {
     })
 })
 
-export const forgotPassword=catchAsyncErrors(async(req,res,next)=>{
+export const forgotPassword = catchAsyncErrors(async(req,res,next)=> {
     const user = await User.findOne({email:req.body.email})
 
-    if(!user){
-        return next(new ErrorHandler("istifadeci tapilmadi",404))
+    if(!user) {
+        return next(new ErrorHandler("Istifadeci tapilmadi", 404))
     }
-    const resetToken=user.getResetPasswordToken()
+
+    const resetToken = user.getResetPasswordToken()
+    // save bir metoddan istifade edirik - bazaya yazan metod
+    //ARASHDIRILMALI- ne ucun istifade olunur
     await user.save()
-    const resetUrl = `${process.env.FRONTEND_URL}/crud/v1/password/token/${resetToken}` 
+
+    // linkin yaradilmasi merhelesi
+    const resetUrl = `${process.env.FRONTEND_URL}/crud/v1/password/reset/token/${resetToken}` 
     const message = getResetPasswordTemplate(user?.name,resetUrl)
 
+    // promise chaining .then
 
     try {
         await sendEmail({
             email: user?.email,
-            subject: "sifrenin sifirlanma mergelesi",
+            subject: "SHIFRENIN SIFIRLANMASI MERHELESI",
             message
 
         })
@@ -71,10 +79,14 @@ export const forgotPassword=catchAsyncErrors(async(req,res,next)=>{
     }
 
     catch(err) {
+        // IMPORTANT!!!
         user.resetPasswordExpire = undefined
         user.resetPasswordToken = undefined
 
         await user.save()
         return next(new ErrorHandler("Serverde gozlenilmeyen bir xeta bash verdi", 500))
     }
+
+
+
 })
